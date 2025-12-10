@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Study Buddy – Focus with a Friend</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: #0ea5e9;
+      --accent-2: #a855f7;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card: rgba(15, 23, 42, 0.9);
+      --border: rgba(148, 163, 184, 0.3);
+      --danger: #f97373;
+      --success: #4ade80;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.95);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #0b1120 0, transparent 55%),
+        radial-gradient(circle at 100% 0%, #0f172a 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, #020617 0, #000 70%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .page { max-width: none; width: 100%; margin: 0; padding: 32px 56px 72px; }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 4px 20px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+      margin-bottom: 10px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-logo {
+      width: 40px; height: 40px; border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #e0f2fe 0, #38bdf8 35%, #0369a1 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: #0b1120;
+      box-shadow: 0 10px 22px rgba(56, 189, 248, 0.7);
+    }
+    .nav-title { font-size: 22px; font-weight: 700; }
+    .nav-sub { font-size: 12px; color: var(--muted); }
+    .nav-links {
+      display: flex; align-items: center; gap: 18px;
+      font-size: 14px; color: var(--muted);
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.9;
+      transition: width 0.2s ease-out;
+    }
+    .nav-link:hover::after,
+    .nav-link.active::after { width: 100%; }
+    .nav-chip {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      background: linear-gradient(120deg, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.9));
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr);
+      gap: 32px;
+      margin-top: 18px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 12px; padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--muted);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.25), transparent 55%);
+    }
+    .hero-badge-dot {
+      width: 10px; height: 10px; border-radius: 999px;
+      background: radial-gradient(circle, #4ade80 0, #15803d 70%);
+      box-shadow: 0 0 12px rgba(74, 222, 128, 0.8);
+    }
+    .hero-title {
+      margin-top: 20px;
+      font-size: clamp(34px, 4.8vw, 46px);
+      line-height: 1.1;
+      font-weight: 800;
+    }
+    .hero-title span {
+      background: linear-gradient(100deg, #38bdf8, #22c55e, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero-text {
+      margin-top: 14px;
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 520px;
+    }
+    .hero-cta {
+      margin-top: 24px;
+      display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+    }
+    .btn-primary {
+      padding: 11px 22px;
+      border-radius: 999px;
+      border: none;
+      cursor: default;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0b1120;
+      background: linear-gradient(90deg, #0ea5e9, #22c55e);
+      box-shadow: 0 16px 32px rgba(34, 197, 94, 0.5);
+    }
+    .btn-ghost {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 13px;
+      color: var(--muted);
+      cursor: default;
+      background: rgba(15, 23, 42, 0.7);
+    }
+    .hero-meta { margin-top: 12px; font-size: 12px; color: var(--muted); }
+    .hero-features {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hero-feature { display: flex; align-items: center; gap: 10px; }
+    .hero-feature-dot {
+      width: 7px; height: 7px; border-radius: 999px;
+      background: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    }
+    .hero-feature span { color: var(--text); font-weight: 500; }
+    .hero-mock {
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 65%);
+      padding: 14px;
+    }
+    .mock-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+    }
+    .mock-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .mock-room-info { display: flex; flex-direction: column; gap: 4px; }
+    .mock-room-title { font-size: 14px; font-weight: 600; }
+    .mock-room-subtitle { font-size: 12px; color: var(--muted); }
+    .mock-tag {
+      padding: 5px 10px; border-radius: 999px;
+      background: rgba(22, 163, 74, 0.22);
+      color: #bbf7d0; font-size: 12px;
+    }
+    .mock-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.95fr);
+      gap: 16px; margin-top: 8px;
+    }
+    .mock-timer {
+      background: linear-gradient(145deg, #020617, #0b1120);
+      border-radius: var(--radius-md);
+      padding: 16px 12px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .mock-timer-label {
+      font-size: 12px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+    .mock-timer-circle {
+      width: 160px; height: 160px; border-radius: 999px;
+      padding: 10px;
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.5), #020617 60%);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .mock-timer-ring {
+      width: 100%; height: 100%; border-radius: inherit;
+      border: 2px solid rgba(148, 163, 184, 0.6);
+      background: conic-gradient(#22c55e 0 230deg, rgba(15, 23, 42, 0.85) 230deg 360deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 28px rgba(15, 23, 42, 0.9);
+    }
+    .mock-timer-inner {
+      width: 74%; height: 74%; border-radius: inherit;
+      background: #020617;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 4px;
+    }
+    .mock-time { font-size: 26px; font-weight: 700; }
+    .mock-phase {
+      font-size: 12px; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+    .mock-btn-row { display: flex; gap: 10px; margin-top: 8px; font-size: 12px; }
+    .mock-btn {
+      padding: 6px 12px; border-radius: 999px; border: none;
+      font-weight: 600; font-size: 12px; cursor: default;
+    }
+    .mock-btn-primary {
+      background: linear-gradient(90deg, #0ea5e9, #22c55e);
+      color: #020617;
+    }
+    .mock-btn-ghost {
+      background: rgba(15, 23, 42, 1);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    .mock-meta-line { margin-top: 8px; font-size: 12px; color: var(--muted); }
+    .mock-meta-line span { color: var(--accent); }
+    .mock-buddy-col { display: flex; flex-direction: column; gap: 12px; }
+    .mock-buddy-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+    }
+    .mock-avatar {
+      width: 42px; height: 42px; border-radius: 999px;
+      background: radial-gradient(circle at 0 0, #bae6fd 0, #0ea5e9 50%, #0369a1 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: #020617; font-weight: 700; font-size: 18px;
+    }
+    .mock-avatar-alt {
+      background: radial-gradient(circle at 0 0, #f5d0fe 0, #a855f7 50%, #581c87 100%);
+    }
+    .mock-buddy-text { display: flex; flex-direction: column; gap: 2px; }
+    .mock-buddy-name { font-size: 14px; font-weight: 600; }
+    .mock-buddy-status { font-size: 12px; color: var(--muted); }
+    .mock-pill {
+      font-size: 11px; padding: 4px 10px; border-radius: 999px;
+      background: rgba(22, 163, 74, 0.22); color: #bbf7d0;
+    }
+    .mock-pill-red {
+      background: rgba(220, 38, 38, 0.25); color: #fecaca;
+    }
+    .mock-points-card {
+      padding: 10px 12px; border-radius: var(--radius-md);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.16), transparent 60%);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 12px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .mock-points-main {
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .mock-points-main span:first-child { color: var(--muted); }
+    .mock-points-value { font-weight: 700; font-size: 18px; }
+    .mock-small { font-size: 12px; color: var(--muted); }
+    .mock-warning {
+      margin-top: 8px; padding: 7px 8px; border-radius: 10px;
+      font-size: 12px;
+      background: rgba(127, 29, 29, 0.9); color: #fee2e2;
+    }
+    .section { margin-top: 48px; }
+    .section-title-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .section-title { font-size: 22px; font-weight: 700; }
+    .section-sub { font-size: 14px; color: var(--muted); max-width: 520px; }
+    .how-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px; margin-top: 16px;
+    }
+    .how-card {
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: var(--radius-md);
+      padding: 14px 14px 16px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.8);
+    }
+    .how-step {
+      font-size: 12px; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.12em;
+      margin-bottom: 6px;
+    }
+    .how-title { font-weight: 600; margin-bottom: 6px; }
+    .how-text { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px; margin-top: 18px; font-size: 14px;
+    }
+    .feature-card {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: var(--radius-md);
+      padding: 12px 13px 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.9);
+    }
+    .feature-label {
+      font-size: 12px; color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+    .feature-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .feature-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .footer {
+      margin-top: 44px; padding-top: 20px;
+      border-top: 1px solid rgba(15, 23, 42, 0.95);
+      font-size: 12px; color: var(--muted);
+      display: flex; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    @media (max-width: 900px) {
+      .page { padding: 24px 24px 56px; }
+      .hero { grid-template-columns: minmax(0, 1fr); }
+      .hero-mock { order: -1; }
+    }
+    @media (max-width: 720px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .hero-features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .how-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .features-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .mock-body {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    @media (max-width: 480px) {
+      .page { padding: 20px 16px 48px; }
+      .hero-features {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="nav">
+      <div class="nav-brand">
+        <div class="nav-logo">SB</div>
+        <div>
+          <div class="nav-title">Study Buddy</div>
+          <div class="nav-sub">Web-based focus partner for students</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="how.html" class="nav-link">How it works</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <div class="nav-chip">DESIGN THINKING PROTOTYPE</div>
+      </div>
+    </nav>
+
+    <section class="hero" aria-labelledby="hero-heading">
+      <div>
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          <span>Reduce phone distractions with social accountability</span>
+        </div>
+
+        <h1 id="hero-heading" class="hero-title">
+          Study smarter with a <span>buddy-powered</span> focus website.
+        </h1>
+
+        <p class="hero-text">
+          Study Buddy is a web-based tool where two students commit to a shared focus session.
+          Instead of scrolling alone, you stay accountable together — reducing mobile distractions
+          and building better study habits.
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn-primary">Start a focus session (concept)</button>
+          <button class="btn-ghost">Join with a code (prototype)</button>
+        </div>
+
+        <div class="hero-meta">
+          This is a non-functional HTML/CSS prototype created for a Design Thinking project.
+        </div>
+
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feature-dot"></div>
+            <div><span>Paired sessions</span><br>Two students commit to the same timer.</div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-dot"></div>
+            <div><span>Gentle accountability</span><br>Stay focused so your buddy doesn’t lose points.</div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-dot"></div>
+            <div><span>Web-first design</span><br>No installation — just open and focus.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-mock">
+        <div class="mock-card" aria-label="Mockup of Study Buddy focus room">
+          <div class="mock-header">
+            <div class="mock-room-info">
+              <div class="mock-room-title">Focus Room · #4KF3B</div>
+              <div class="mock-room-subtitle">You &amp; your buddy are in a 40 minute deep work session.</div>
+            </div>
+            <div class="mock-tag">Live · 2 connected</div>
+          </div>
+
+          <div class="mock-body">
+            <div class="mock-timer">
+              <div class="mock-timer-label">Shared focus timer</div>
+              <div class="mock-timer-circle">
+                <div class="mock-timer-ring">
+                  <div class="mock-timer-inner">
+                    <div class="mock-time">24:13</div>
+                    <div class="mock-phase">In session</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mock-btn-row">
+                <button class="mock-btn mock-btn-primary">Start (concept)</button>
+                <button class="mock-btn mock-btn-ghost">Pause</button>
+                <button class="mock-btn mock-btn-ghost">End</button>
+              </div>
+              <div class="mock-meta-line">
+                Goal: <span>“Finish 2 physics numericals”</span>
+              </div>
+            </div>
+
+            <div class="mock-buddy-col">
+              <div class="mock-buddy-card">
+                <div class="mock-avatar">L</div>
+                <div class="mock-buddy-text">
+                  <div class="mock-buddy-name">Lakshya (You)</div>
+                  <div class="mock-buddy-status">Status: Focused · 3 sessions streak</div>
+                </div>
+                <span class="mock-pill">You</span>
+              </div>
+
+              <div class="mock-buddy-card">
+                <div class="mock-avatar mock-avatar-alt">A</div>
+                <div class="mock-buddy-text">
+                  <div class="mock-buddy-name">Aarav (Buddy)</div>
+                  <div class="mock-buddy-status">Last distraction: 6 min ago</div>
+                </div>
+                <span class="mock-pill-red">1 warning</span>
+              </div>
+
+              <div class="mock-points-card">
+                <div class="mock-points-main">
+                  <span>Shared focus points</span>
+                  <span class="mock-points-value">128</span>
+                </div>
+                <div class="mock-small">
+                  +10 for each completed session · −5 whenever either of you gets distracted.
+                </div>
+                <div class="mock-warning">
+                  “Your buddy opened a social app. Stay focused together to keep your streak alive.”
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="how-heading">
+      <div class="section-title-row">
+        <h2 id="how-heading" class="section-title">How Study Buddy works</h2>
+        <p class="section-sub">
+          A simple 3-step idea: pair up with a friend, commit to a shared timer, and then reflect on your focus streak together.
+          For more details, open the “How it works” page in the navigation.
+        </p>
+      </div>
+
+      <div class="how-grid">
+        <article class="how-card">
+          <div class="how-step">Step 1</div>
+          <div class="how-title">Pair with a buddy</div>
+          <p class="how-text">
+            One student creates a focus room on the website and shares the room code. Their friend joins with the same code from any device.
+          </p>
+        </article>
+
+        <article class="how-card">
+          <div class="how-step">Step 2</div>
+          <div class="how-title">Start the shared timer</div>
+          <p class="how-text">
+            Both students agree on a study block, such as 40 minutes. The timer represents a joint promise to avoid phone distractions.
+          </p>
+        </article>
+
+        <article class="how-card">
+          <div class="how-step">Step 3</div>
+          <div class="how-title">Review and grow</div>
+          <p class="how-text">
+            After each session, they review the points, warnings and streaks, and slowly build stronger, healthier study habits.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="features-heading">
+      <div class="section-title-row">
+        <h2 id="features-heading" class="section-title">Core design features</h2>
+        <p class="section-sub">
+          These features are conceptual. This prototype focuses on the visual design of the Study Buddy website.
+          The “Features” page describes each benefit in more depth.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <article class="feature-card">
+          <div class="feature-label">01 · Social accountability</div>
+          <div class="feature-title">Study with someone, not alone</div>
+          <p class="feature-text">
+            When both students share the same timer, breaking focus affects both partners. This gentle peer pressure reduces
+            “just 2 minutes” of scrolling.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-label">02 · Gentle feedback</div>
+          <div class="feature-title">Warnings instead of punishment</div>
+          <p class="feature-text">
+            The system is imagined to give light warnings and small point changes, so students feel guided instead of blocked.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-label">03 · Web-first approach</div>
+          <div class="feature-title">Runs in any modern browser</div>
+          <p class="feature-text">
+            No app installation, no sign-up barrier. A link or room code is enough to start a session with a friend.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>
+        Study Buddy · HTML &amp; CSS only · Non-interactive UI created as part of a Design Thinking project on
+        reducing phone distractions for students.
+      </div>
+      <div>
+        Prototype flow: Empathy → Persona → POV → HMW → Ideation → <strong>Website UI</strong>.
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
