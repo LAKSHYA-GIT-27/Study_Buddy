@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Study Buddy – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: #0ea5e9;
+      --accent-2: #a855f7;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --card: rgba(15, 23, 42, 0.9);
+      --border: rgba(148, 163, 184, 0.3);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.95);
+    }
+    * { box-sizing: border-box; }
+    html,body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, #0b1120 0, transparent 55%),
+        radial-gradient(circle at 100% 0%, #0f172a 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, #020617 0, #000 70%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .page { max-width: none; width: 100%; margin: 0; padding: 32px 56px 72px; }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 4px 20px;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.9);
+      margin-bottom: 10px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-logo {
+      width: 40px; height: 40px; border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #e0f2fe 0, #38bdf8 35%, #0369a1 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 18px; color: #0b1120;
+      box-shadow: 0 10px 22px rgba(56, 189, 248, 0.7);
+    }
+    .nav-title { font-size: 22px; font-weight: 700; }
+    .nav-sub { font-size: 12px; color: var(--muted); }
+    .nav-links { display: flex; align-items: center; gap: 18px; font-size: 14px; color: var(--muted); }
+    .nav-link { position: relative; padding: 4px 6px; }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.9;
+      transition: width 0.2s ease-out;
+    }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .nav-chip {
+      padding: 6px 12px; border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+      background: linear-gradient(120deg, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.9));
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.1fr);
+      gap: 32px; margin-top: 18px; align-items: center;
+    }
+    .hero-title { margin-top: 20px; font-size: clamp(34px, 4.8vw, 46px); line-height: 1.1; font-weight: 800; }
+    .hero-title span { background: linear-gradient(100deg, #38bdf8, #22c55e, #a855f7); -webkit-background-clip: text; color: transparent; }
+    .hero-text { margin-top: 14px; font-size: 15px; color: var(--muted); max-width: 520px; }
+    .btn-primary { padding: 11px 22px; border-radius: 999px; border: none; cursor: default; font-size: 14px; font-weight: 600; color: #0b1120; background: linear-gradient(90deg, #0ea5e9, #22c55e); box-shadow: 0 16px 32px rgba(34, 197, 94, 0.5); }
+
+    .dashboard-section {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 22px;
+      align-items: start;
+    }
+    .dashboard-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .dashboard-title { font-size: 20px; font-weight: 700; }
+    .dashboard-sub { font-size: 13px; color: var(--muted); }
+
+    .progress-card {
+      background: linear-gradient(180deg, rgba(8,12,20,0.6), rgba(8,12,20,0.75));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(2,6,17,0.7);
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      align-items: end;
+      margin-top: 12px;
+    }
+
+    .day { display: flex; flex-direction: column; gap: 8px; align-items: center; min-height: 96px; }
+    .day-label { font-size: 12px; color: var(--muted); }
+    .bar-wrap { width: 100%; height: 72px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px; }
+
+    .bar { width: 100%; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.04); position: relative; overflow: hidden; }
+    .bar .student { height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgba(56,189,248,0.95), rgba(168,85,247,0.9)); box-shadow: 0 6px 18px rgba(56,189,248,0.12); }
+    .bar .buddy { height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgba(16,185,129,0.95), rgba(34,197,94,0.9)); box-shadow: 0 6px 18px rgba(34,197,94,0.12); margin-top: 4px; }
+
+    .value { font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
+
+    .summary-card { display: flex; flex-direction: column; gap: 12px; }
+    .summary-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat { display: flex; gap: 10px; align-items: center; }
+    .stat .dot { width: 12px; height: 12px; border-radius: 999px; box-shadow: 0 6px 14px rgba(0,0,0,0.6); }
+    .dot-student { background: linear-gradient(90deg,#38bdf8,#a855f7); }
+    .dot-buddy { background: linear-gradient(90deg,#10b981,#22c55e); }
+    .stat-value { font-weight: 700; font-size: 18px; }
+    .small-muted { font-size: 12px; color: var(--muted); }
+    .legend { display: flex; gap: 12px; align-items: center; margin-top: 8px; font-size: 13px; color: var(--muted); }
+
+    .card-cta { margin-top: 12px; display:flex; gap:10px; }
+    .mini-btn { padding:8px 12px; border-radius:10px; border:1px solid rgba(148,163,184,0.12); background:rgba(255,255,255,0.02); color:var(--muted); font-size:13px; cursor:default; }
+
+    @media (max-width: 920px) {
+      .dashboard-section { grid-template-columns: 1fr; }
+      .week-grid { gap: 8px; }
+      .day { min-height: 84px; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 24px; }
+      .hero { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="nav">
+      <div class="nav-brand">
+        <div class="nav-logo">SB</div>
+        <div>
+          <div class="nav-title">Study Buddy</div>
+          <div class="nav-sub">Web-based focus partner for students</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="how.html" class="nav-link">How it works</a>
+        <a href="features.html" class="nav-link">Features</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <div class="nav-chip">DESIGN THINKING PROTOTYPE</div>
+      </div>
+    </nav>
+
+    <section style="display:flex;gap:28px;align-items:center;justify-content:space-between;">
+      <div>
+        <h1 class="hero-title">Dashboard</h1>
+        <p class="hero-text">Weekly summary of study time and progress for you and your buddy.</p>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn-primary">New focus session</button>
+        <div style="color:var(--muted);font-size:13px;">Mon → Sun</div>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="progress-card">
+        <div class="dashboard-title-row">
+          <div>
+            <div class="dashboard-title">Weekly progress</div>
+            <div class="dashboard-sub">Overview of study time for you and your buddy (last 7 days)</div>
+          </div>
+          <div class="small-muted">Mon → Sun</div>
+        </div>
+
+        <div class="week-grid" aria-hidden="false">
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:70%"></div></div>
+              <div class="bar"><div class="buddy" style="width:50%"></div></div>
+            </div>
+            <div class="day-label">Mon</div>
+            <div class="value">You 3.5h · Buddy 2.5h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:55%"></div></div>
+              <div class="bar"><div class="buddy" style="width:60%"></div></div>
+            </div>
+            <div class="day-label">Tue</div>
+            <div class="value">You 2.8h · Buddy 3.1h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:80%"></div></div>
+              <div class="bar"><div class="buddy" style="width:72%"></div></div>
+            </div>
+            <div class="day-label">Wed</div>
+            <div class="value">You 4.0h · Buddy 3.6h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:40%"></div></div>
+              <div class="bar"><div class="buddy" style="width:30%"></div></div>
+            </div>
+            <div class="day-label">Thu</div>
+            <div class="value">You 2.0h · Buddy 1.4h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:90%"></div></div>
+              <div class="bar"><div class="buddy" style="width:85%"></div></div>
+            </div>
+            <div class="day-label">Fri</div>
+            <div class="value">You 4.5h · Buddy 4.2h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:20%"></div></div>
+              <div class="bar"><div class="buddy" style="width:10%"></div></div>
+            </div>
+            <div class="day-label">Sat</div>
+            <div class="value">You 1.0h · Buddy 0.5h</div>
+          </div>
+
+          <div class="day">
+            <div class="bar-wrap">
+              <div class="bar"><div class="student" style="width:48%"></div></div>
+              <div class="bar"><div class="buddy" style="width:52%"></div></div>
+            </div>
+            <div class="day-label">Sun</div>
+            <div class="value">You 2.4h · Buddy 2.6h</div>
+          </div>
+        </div>
+
+        <div class="card-cta" style="justify-content:flex-end">
+          <button class="mini-btn">Export CSV</button>
+          <button class="mini-btn">Print summary</button>
+        </div>
+      </div>
+
+      <aside class="summary-card progress-card">
+        <div class="dashboard-title-row">
+          <div>
+            <div class="dashboard-title">This week</div>
+            <div class="dashboard-sub">Quick stats</div>
+          </div>
+          <div class="small-muted">Updated: Today</div>
+        </div>
+
+        <div class="summary-row">
+          <div class="stat">
+            <div class="dot dot-student"></div>
+            <div>
+              <div class="small-muted">You — total</div>
+              <div class="stat-value">20.2h</div>
+            </div>
+          </div>
+          <div class="stat">
+            <div class="dot dot-buddy"></div>
+            <div>
+              <div class="small-muted">Buddy — total</div>
+              <div class="stat-value">17.9h</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-row">
+          <div>
+            <div class="small-muted">Average per day</div>
+            <div class="stat-value">2.89h</div>
+          </div>
+          <div>
+            <div class="small-muted">Streak</div>
+            <div class="stat-value">3 sessions</div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="dot dot-student" style="width:10px;height:10px;border-radius:999px"></div>
+            <div class="small-muted">You</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="dot dot-buddy" style="width:10px;height:10px;border-radius:999px"></div>
+            <div class="small-muted">Buddy</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;font-size:13px;color:var(--muted)">
+          Notes: Bars are editable via inline width values. Replace sample hours with real values for presentation.
+        </div>
+      </aside>
+    </section>
+
+    <footer style="margin-top:44px;padding-top:20px;border-top:1px solid rgba(15,23,42,0.95);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>Study Buddy · HTML &amp; CSS only · Dashboard prototype</div>
+      <div>Process: Empathize → Define → Ideate → Prototype → Test</div>
+    </footer>
+  </main>
+</body>
+</html>
